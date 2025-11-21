@@ -1,1 +1,0 @@
-Extensions directory placeholder.
