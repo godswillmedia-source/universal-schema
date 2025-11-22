@@ -66,7 +66,6 @@ message_type
 
 capabilities
 	•	A list of required capabilities the sender expects the receiver to have
-	•	Used by Doorkeeper to authorize the message
 	•	Example: ["inventory.read"]
 
 payload
