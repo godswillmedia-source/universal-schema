@@ -1,0 +1,112 @@
+# Example: Inventory System
+
+Communication between a customer service agent and inventory agent.
+
+## Agents
+
+**Diana** (Customer Service)
+- Capabilities: `inventory.read`, `booking.create`
+
+**HairVault** (Inventory Management)
+- Capabilities: `inventory.read`, `inventory.write`, `inventory.alert`
+
+---
+
+## Scenario 1: Check Stock
+
+**Diana → HairVault:**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "protocol_version": "0.1",
+  "timestamp": "2025-11-21T20:45:00Z",
+  "agent_id": "diana",
+  "target_agent": "hairvault",
+  "message_type": "inventory_query",
+  "capabilities": ["inventory.read"],
+  "payload": {
+    "product": "olaplex_no3",
+    "quantity_needed": 2
+  }
+}
+```
+
+**HairVault → Diana:**
+```json
+{
+  "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "protocol_version": "0.1",
+  "timestamp": "2025-11-21T20:45:01Z",
+  "agent_id": "hairvault",
+  "target_agent": "diana",
+  "message_type": "inventory_response",
+  "capabilities": ["inventory.read"],
+  "payload": {
+    "product": "olaplex_no3",
+    "in_stock": true,
+    "quantity_available": 12,
+    "location": "warehouse-a"
+  }
+}
+```
+
+---
+
+## Scenario 2: Low Stock Alert
+
+**HairVault → Diana:**
+```json
+{
+  "id": "alert-uuid-123",
+  "protocol_version": "0.1",
+  "timestamp": "2025-11-21T21:00:00Z",
+  "agent_id": "hairvault",
+  "target_agent": "diana",
+  "message_type": "inventory_alert",
+  "capabilities": ["inventory.alert"],
+  "payload": {
+    "product": "olaplex_no3",
+    "current_stock": 2,
+    "reorder_point": 5,
+    "urgency": "medium"
+  }
+}
+```
+
+---
+
+## Scenario 3: Product Not Found
+
+**Diana → HairVault:**
+```json
+{
+  "id": "query-456",
+  "protocol_version": "0.1",
+  "timestamp": "2025-11-21T20:50:00Z",
+  "agent_id": "diana",
+  "target_agent": "hairvault",
+  "message_type": "inventory_query",
+  "capabilities": ["inventory.read"],
+  "payload": {
+    "product": "nonexistent_product"
+  }
+}
+```
+
+**HairVault → Diana (Error):**
+```json
+{
+  "id": "error-789",
+  "protocol_version": "0.1",
+  "timestamp": "2025-11-21T20:50:01Z",
+  "agent_id": "hairvault",
+  "target_agent": "diana",
+  "message_type": "error",
+  "capabilities": [],
+  "payload": {
+    "error_code": "PRODUCT_NOT_FOUND",
+    "error_message": "Product 'nonexistent_product' not found",
+    "original_message_id": "query-456"
+  }
+}
+```
